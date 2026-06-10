@@ -12,6 +12,7 @@
     --sky:#dcebec;--navy:#20303f;--navy-dk:#16242f;
     --blue:#2f6fb0;--blue-dk:#255a90;--card:#fff;--line:#e4edf0;--muted:#8aa0ad;
     --c-han:#2f6fb0;--c-jung:#c0563f;--c-il:#3c7a4f;--c-yang:#9a7240;--c-bun:#c77fa3;
+    --c-asian:#2f9aa0;--c-salad:#7aa53c;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
@@ -123,11 +124,11 @@ const MENU = {
   "중식": ["연희중식","타오마라탕","백미향","시향","로우샹로우"],
   "일식": ["오레노라멘","크레이지카츠","이리에","카와카츠","쿄다이야우동","스시강","마루돈까스"],
   "양식": ["스케줄","스파카나폴리","피제리아오","몬스터파스타","팔로피자","23플래터"],
-  "분식": ["참바른김밥","합정조이떡볶이","마포만두","또보겠지떡볶이","김가네"]
-  "기타아시안": ["낀낀","우엔","호앙비엣"]
+  "분식": ["참바른김밥","합정조이떡볶이","마포만두","또보겠지떡볶이","김가네"],
+  "기타아시안": ["낀낀","우엔","호앙비엣"],
   "샐러드": ["피쉬버켓","그릭조이"]
 };
-const COLOR={"한식":"var(--c-han)","중식":"var(--c-jung)","일식":"var(--c-il)","양식":"var(--c-yang)","분식":"var(--c-bun)","기타아시안":"var(--c-bun)","샐러드":"var(--c-bun)"};
+const COLOR={"한식":"var(--c-han)","중식":"var(--c-jung)","일식":"var(--c-il)","양식":"var(--c-yang)","분식":"var(--c-bun)","기타아시안":"var(--c-asian)","샐러드":"var(--c-salad)"};
 
 const cats=Object.keys(MENU);let active="전체";
 const $=id=>document.getElementById(id);
