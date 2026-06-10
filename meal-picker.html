@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘 점심 뽑기 · 합정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#f9d2dd;
+    --pink-deep:#f0a9bd;
+    --pink-line:#f5b9cb;
+    --lav:#bcaeec;
+    --lav-deep:#9d8be0;
+    --lav-soft:#d3c8f4;
+    --cream:#f6e7c5;
+    --cream-edge:#e6cf9c;
+    --brown:#5b3a2e;
+    --brown-soft:#7a5345;
+    --white:#fff;
+    --donut:#f4a9c0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Jua',sans-serif;
+    background:var(--pink);
+    display:flex;align-items:center;justify-content:center;
+    padding:22px;min-height:100vh;position:relative;overflow-x:hidden;
+  }
+  /* tiled floor at the bottom */
+  body::after{
+    content:"";position:fixed;left:0;right:0;bottom:0;height:24%;
+    background:
+      repeating-linear-gradient(60deg, transparent 0 38px, var(--pink-line) 38px 40px),
+      repeating-linear-gradient(-60deg, transparent 0 38px, var(--pink-line) 38px 40px);
+    opacity:.9;z-index:0;pointer-events:none;
+  }
+
+  .machine{
+    position:relative;z-index:1;width:100%;max-width:400px;
+    background:var(--lav);
+    border:5px solid var(--lav-deep);
+    border-radius:34px;
+    padding:20px 18px 20px;
+    box-shadow:0 14px 0 rgba(157,139,224,.45), 0 26px 50px rgba(120,90,160,.35);
+  }
+  /* side ears */
+  .ear{position:absolute;top:48%;width:24px;height:42px;background:var(--lav);
+    border:5px solid var(--lav-deep);z-index:0}
+  .ear.l{left:-18px;border-radius:14px 0 0 14px;border-right:none}
+  .ear.r{right:-18px;border-radius:0 14px 14px 0;border-left:none}
+
+  /* banner */
+  .banner{
+    position:relative;margin:-4px auto 14px;width:80%;
+    background:var(--lav-soft);border:4px solid var(--lav-deep);border-radius:16px;
+    padding:8px 6px 9px;text-align:center;
+  }
+  .banner::before,.banner::after{
+    content:"";position:absolute;top:50%;width:0;height:0;transform:translateY(-50%);
+    border-top:13px solid transparent;border-bottom:13px solid transparent;
+  }
+  .banner::before{left:-15px;border-right:14px solid var(--lav-deep)}
+  .banner::after{right:-15px;border-left:14px solid var(--lav-deep)}
+  .outline{
+    color:var(--white);letter-spacing:.01em;
+    text-shadow:
+      -2px -2px 0 var(--brown), 2px -2px 0 var(--brown),
+      -2px  2px 0 var(--brown), 2px  2px 0 var(--brown),
+      -3px 0 0 var(--brown), 3px 0 0 var(--brown),
+      0 -3px 0 var(--brown), 0 3px 0 var(--brown),
+      0 5px 0 rgba(91,58,46,.28);
+  }
+  .banner .outline{font-size:23px}
+  .sub{display:block;margin-top:2px;color:var(--lav-deep);font-size:12px}
+
+  /* chips */
+  .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px}
+  .chip{
+    font-family:'Jua';font-size:13px;cursor:pointer;color:var(--lav-deep);
+    background:var(--white);border:3px solid var(--lav-deep);border-radius:999px;
+    padding:5px 13px;transition:transform .1s ease,background .12s,color .12s;
+  }
+  .chip:hover{transform:translateY(-1px)}
+  .chip.on{background:var(--lav-deep);color:var(--white)}
+
+  /* screen window */
+  .screen{
+    position:relative;background:#f3f7ff;
+    border:5px solid var(--lav-deep);border-radius:22px;
+    height:190px;margin-bottom:16px;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    background-image:
+      linear-gradient(0deg, rgba(188,174,236,.18), rgba(188,174,236,.18)),
+      repeating-linear-gradient(45deg,#eef3ff 0 22px,#e7eeff 22px 44px);
+  }
+  /* decorative donuts */
+  .donut{position:absolute;width:40px;height:40px;border-radius:50%;
+    background:var(--donut);box-shadow:inset 0 0 0 11px #fbd0dd, inset 0 0 0 14px transparent;opacity:.7}
+  .donut::after{content:"";position:absolute;inset:14px;border-radius:50%;background:#f3f7ff}
+  .donut.a{top:12px;left:14px;transform:rotate(-12deg)}
+  .donut.b{bottom:14px;right:16px;width:32px;height:32px}
+  .donut.b::after{inset:11px}
+
+  .screen .cat{
+    position:relative;z-index:2;font-size:13px;color:var(--lav-deep);
+    background:var(--white);border:3px solid var(--lav-deep);border-radius:999px;
+    padding:2px 12px;opacity:0;transform:translateY(4px);transition:all .25s ease;
+  }
+  .screen .pick{
+    position:relative;z-index:2;text-align:center;padding:0 16px;line-height:1.1;
+    font-size:42px;color:var(--white);
+    text-shadow:
+      -2px -2px 0 var(--brown),2px -2px 0 var(--brown),-2px 2px 0 var(--brown),2px 2px 0 var(--brown),
+      -3px 0 0 var(--brown),3px 0 0 var(--brown),0 -3px 0 var(--brown),0 3px 0 var(--brown),
+      0 5px 0 rgba(91,58,46,.28);
+  }
+  .screen .pick.long{font-size:33px}
+  .screen .pick.xlong{font-size:26px}
+  .screen.idle .pick{font-size:20px;color:var(--lav-deep);text-shadow:none}
+  .screen.done .cat{opacity:1;transform:none}
+  .screen.done{border-color:var(--donut)}
+
+  /* play button */
+  .play{
+    position:relative;z-index:2;width:100%;cursor:pointer;
+    font-family:'Jua';font-size:27px;color:var(--brown);
+    background:var(--cream);border:5px solid var(--cream-edge);border-radius:20px;
+    padding:13px;transition:transform .08s ease;
+    box-shadow:0 7px 0 var(--cream-edge);
+  }
+  .play:active{transform:translateY(5px);box-shadow:0 2px 0 var(--cream-edge)}
+  .play:focus-visible{outline:4px solid var(--lav-deep);outline-offset:3px}
+  .play:disabled{filter:saturate(.6);cursor:default}
+
+  /* editor */
+  .editbar{margin-top:12px;text-align:center}
+  .edittoggle{background:none;border:none;cursor:pointer;font-family:'Jua';
+    font-size:13px;color:var(--white);text-shadow:0 1px 0 var(--lav-deep)}
+  .editor{display:none;margin-top:12px;background:rgba(255,255,255,.55);
+    border-radius:16px;padding:13px;text-align:left}
+  .editor.open{display:block}
+  .editor h4{font-size:13px;color:var(--lav-deep);margin-bottom:8px}
+  .pool{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;max-height:118px;overflow-y:auto;min-height:18px}
+  .pool .empty{font-size:12px;color:var(--brown-soft)}
+  .tag{font-size:13px;color:var(--brown);background:var(--white);
+    border:2px solid var(--lav-soft);border-radius:10px;padding:3px 9px;
+    display:flex;align-items:center;gap:7px}
+  .tag .x{cursor:pointer;color:var(--donut)}
+  .addrow{display:flex;gap:6px}
+  .addrow input{flex:1;font-family:'Jua';font-size:13px;color:var(--brown);
+    border:2px solid var(--lav-soft);border-radius:10px;padding:7px 10px;background:var(--white)}
+  .addrow input:focus{outline:none;border-color:var(--lav-deep)}
+  .addrow button{font-family:'Jua';font-size:13px;color:var(--white);cursor:pointer;
+    background:var(--lav-deep);border:none;border-radius:10px;padding:0 15px}
+  @media (prefers-reduced-motion: reduce){
+    .play,.play:active,.screen .cat{transition:none;transform:none}
+  }
+</style>
+</head>
+<body>
+  <main class="machine">
+    <span class="ear l"></span><span class="ear r"></span>
+
+    <div class="banner">
+      <span class="outline">오늘 점심</span>
+      <span class="sub">합정역 근처 · <em id="count"></em></span>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <div class="screen idle" id="screen">
+      <span class="donut a"></span><span class="donut b"></span>
+      <div class="cat" id="cat"></div>
+      <div class="pick" id="pick">뽑기를 눌러봐!</div>
+    </div>
+
+    <button class="play" id="draw">뽑 기!</button>
+
+    <div class="editbar"><button class="edittoggle" id="edittoggle">식당 추가·삭제</button></div>
+
+    <div class="editor" id="editor">
+      <h4 id="poolLabel">식당 목록</h4>
+      <div class="pool" id="pool"></div>
+      <div class="addrow">
+        <input id="newItem" type="text" placeholder="식당 추가" maxlength="20">
+        <button id="addBtn">추가</button>
+      </div>
+    </div>
+  </main>
+
+<script>
+/* ── 합정역 근처 식당 ── 바꾸려면 배열만 수정하면 돼 ── */
+const MENU = {
+  "한식": ["합정옥","각시보쌈","콩청대","육전국밥","따로집","봄이보리밥","구덕집"],
+  "중식": ["연희중식","타오마라탕","백미향","시향","로우샹로우"],
+  "일식": ["오레노라멘","크레이지카츠","이리에","카와카츠","쿄다이야우동","스시강","마루돈까스"],
+  "양식": ["스케줄","스파카나폴리","피제리아오","몬스터파스타","팔로피자","23플래터"],
+  "분식": ["참바른김밥","합정조이떡볶이","마포만두","또보겠지떡볶이","김가네"]
+};
+/* ──────────────────────────────────────────── */
+
+const cats=Object.keys(MENU);let active="전체";
+const $=id=>document.getElementById(id);
+const chipsEl=$('chips'),screen=$('screen'),catEl=$('cat'),pickEl=$('pick'),
+      drawEl=$('draw'),countEl=$('count');
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let drawn=false;
+
+const total=()=>cats.reduce((n,c)=>n+MENU[c].length,0);
+function buildChips(){
+  chipsEl.innerHTML='';
+  ["전체",...cats].forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'+(c===active?' on':'');
+    b.textContent=c;b.onclick=()=>{active=c;buildChips();renderPool();};
+    chipsEl.appendChild(b);
+  });
+  countEl.textContent=total()+'곳';
+}
+const currentPool=()=>active==="전체"
+  ? cats.flatMap(c=>MENU[c].map(n=>({name:n,cat:c})))
+  : MENU[active].map(n=>({name:n,cat:active}));
+function sizeClass(n){pickEl.classList.remove('long','xlong');
+  if(n.length>=8)pickEl.classList.add('xlong');else if(n.length>=6)pickEl.classList.add('long');}
+function draw(){
+  const pool=currentPool();
+  if(!pool.length){screen.className='screen idle';pickEl.textContent='식당을 추가해줘';catEl.textContent='';return;}
+  drawEl.disabled=true;screen.className='screen rolling';catEl.textContent='';
+  if(reduce){settle(pool[Math.floor(Math.random()*pool.length)]);return;}
+  let t=0;const stop=17+Math.floor(Math.random()*6);let d=45;
+  (function tick(){const r=pool[Math.floor(Math.random()*pool.length)];
+    sizeClass(r.name);pickEl.textContent=r.name;
+    if(++t>=stop){settle(r);return;}
+    if(t>stop-6)d+=38;setTimeout(tick,d);})();
+}
+function settle(r){sizeClass(r.name);pickEl.textContent=r.name;catEl.textContent=r.cat;
+  screen.className='screen done';drawEl.disabled=false;
+  if(!drawn){drawEl.textContent='다시 뽑기!';drawn=true;}}
+
+const editor=$('editor'),poolEl=$('pool'),poolLabel=$('poolLabel'),newItem=$('newItem');
+$('edittoggle').onclick=()=>{editor.classList.toggle('open');renderPool();};
+const targetCat=()=>active==="전체"?"한식":active;
+function renderPool(){
+  const t=targetCat();poolLabel.textContent=`식당 목록 · ${t}`;poolEl.innerHTML='';
+  if(!MENU[t].length){poolEl.innerHTML='<span class="empty">아직 없음 — 아래에서 추가</span>';return;}
+  MENU[t].forEach((n,i)=>{const tag=document.createElement('span');tag.className='tag';
+    tag.innerHTML='<b></b><span class="x">×</span>';tag.querySelector('b').textContent=n;
+    tag.querySelector('.x').onclick=()=>{MENU[t].splice(i,1);renderPool();buildChips();};
+    poolEl.appendChild(tag);});
+}
+function addItem(){const v=newItem.value.trim();if(!v)return;const t=targetCat();
+  if(!MENU[t].includes(v))MENU[t].push(v);newItem.value='';renderPool();buildChips();}
+$('addBtn').onclick=addItem;
+newItem.addEventListener('keydown',e=>{if(e.key==='Enter')addItem();});
+
+drawEl.onclick=draw;buildChips();
+</script>
+</body>
+</html>
